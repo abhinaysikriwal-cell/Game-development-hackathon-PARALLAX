@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="theme-color" content="#071119" />
+    <meta name="description" content="A solo 3D puzzle escape through a glitched Mumbai. Freeze time, shift gravity and cross between dimensions." />
+    <title>Mumbai: Null Signal</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23071119'/%3E%3Cpath d='M20 72V28h12l18 25 18-25h12v44H66V48L50 69 34 48v24z' fill='%2379ffe1'/%3E%3C/svg%3E" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main id="game-shell">
+      <canvas id="world" aria-label="Mumbai Null Signal 3D game"></canvas>
+
+      <section id="title-screen" class="screen active" aria-label="Main menu">
+        <div class="title-copy">
+          <p class="eyebrow"><span class="signal-dot"></span> A SOLO PUZZLE ESCAPE</p>
+          <h1>MUMBAI<br /><em>NULL SIGNAL</em></h1>
+          <p class="logline">The city has lost its place in time.<br />Restore the signal. Find a way home.</p>
+          <div class="menu-actions">
+            <button id="start-button" class="button button-primary"><span>Begin the escape</span><span class="arrow">↗</span></button>
+            <button id="continue-button" class="button button-quiet hidden">Continue run <span id="continue-label"></span></button>
+          </div>
+          <div class="menu-meta"><span>MONSOON ARCHIVE · 2049</span><span>VOLUME 01 / 04</span></div>
+        </div>
+        <div class="title-bottom"><span>WASD / ARROWS TO MOVE</span><span>MOUSE TO LOOK · E TO USE</span></div>
+        <button id="title-audio" class="icon-button title-audio" aria-label="Toggle audio">♫ <span>ON</span></button>
+      </section>
+
+      <section id="cutscene-screen" class="screen cutscene-screen hidden" aria-label="Story cutscene">
+        <svg class="film-art" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="film-title film-description">
+          <title id="film-title">Mumbai: Null Signal — illustrated cinematic</title>
+          <desc id="film-description">Mira Deshmukh, a signal engineer in a rust monsoon jacket with a field radio, follows the broken signal through Mumbai. Her father Dev appears in the final cutscene. Character artwork appears only in videos; gameplay remains first person.</desc>
+          <defs>
+            <linearGradient id="film-sky" x2="0" y2="1"><stop stop-color="#07121c"/><stop offset=".58" stop-color="#294452"/><stop offset="1" stop-color="#101a1d"/></linearGradient>
+            <linearGradient id="film-road" x2="0" y2="1"><stop stop-color="#4b5a54"/><stop offset="1" stop-color="#080d10"/></linearGradient>
+            <linearGradient id="mira-jacket" x2="1" y2="1"><stop stop-color="#d1845a"/><stop offset=".55" stop-color="#8a4d37"/><stop offset="1" stop-color="#46302e"/></linearGradient>
+            <linearGradient id="dev-uniform" x2="1" y2="1"><stop stop-color="#53696a"/><stop offset="1" stop-color="#19282d"/></linearGradient>
+            <radialGradient id="cinema-lamp"><stop stop-color="#ffe2a6" stop-opacity=".9"/><stop offset="1" stop-color="#ff9f55" stop-opacity="0"/></radialGradient>
+            <pattern id="city-windows" width="48" height="58" patternUnits="userSpaceOnUse"><rect x="11" y="10" width="17" height="25" fill="#a6d5cc" opacity=".4"/><rect x="34" y="10" width="7" height="25" fill="#ffd08b" opacity=".4"/></pattern>
+            <filter id="cinema-glow"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <rect width="1600" height="900" fill="url(#film-sky)"/>
+          <circle cx="1200" cy="180" r="280" fill="#78cfda" opacity=".08"/>
+          <g class="film-city" fill="#101e27"><path d="M0 570 90 452 156 518 250 365 324 480 410 332 484 496 574 380 656 502 748 300 834 489 934 366 1010 482 1100 338 1182 487 1274 330 1350 480 1450 350 1520 474 1600 385v340H0z"/><path d="M30 538h120v305H30zm146-87h136v392H176zm184 120h112v272H360zm145-136h138v408H505zm174 115h120v293H679zm166-97h148v390H845zm190 112h126v278h-126zm158-122h136v400h-136z"/></g>
+          <g class="film-windows" fill="url(#city-windows)" opacity=".78"><path d="M176 451h136v392H176zm329-16h138v408H505zm340 39h148v390H845zm328-45h136v400h-136z"/></g>
+          <g class="film-set scene-dadar"><path d="M0 650h1600v250H0z" fill="url(#film-road)"/><path d="M0 723h1600M0 780h1600" stroke="#d1d5c3" stroke-opacity=".28" stroke-width="4"/><path d="m0 885 690-155m910 155L890 730" fill="none" stroke="#d2d4c8" stroke-opacity=".46" stroke-width="9"/><g class="film-train"><path d="M-240 500h490q54 0 54 55v126h-544z" fill="#263d41" stroke="#aac0b5" stroke-width="5"/><path d="M-214 520h475v73h-475z" fill="#79a2a3" opacity=".58"/><path d="M-90 522v70m122-70v70m122-70v70" stroke="#c4d5c9" stroke-width="5" opacity=".5"/><path d="M-218 610h478v30h-478z" fill="#bf7850"/><circle cx="-100" cy="682" r="26" fill="#080e12"/><circle cx="190" cy="682" r="26" fill="#080e12"/></g><circle cx="480" cy="500" r="115" fill="url(#cinema-lamp)"/><path d="M480 420v130m-35-95h70" stroke="#ffcf8d" stroke-width="9" filter="url(#cinema-glow)"/></g>
+          <g class="film-set scene-haji"><path d="M0 670h1600v230H0z" fill="url(#film-road)"/><path d="M0 720q380-58 780 0t820-2v182H0z" fill="#347482" opacity=".52"/><path d="M0 718q380-58 780 0t820-2" fill="none" stroke="#b1eddd" stroke-opacity=".5" stroke-width="5"/><path d="M0 673h1600v20H0z" fill="#8c9a8f"/><path d="M270 672q160-274 320 0" fill="#1e3035" stroke="#91a8a5" stroke-width="12"/><path d="M320 670q110-178 220 0" fill="#517b80" opacity=".7"/></g>
+          <g class="film-set scene-dharavi"><path d="M0 640h1600v260H0z"/><path d="M0 310h320v430H0zm320 100h250v340H320zm1010-120h270v450h-270zm-280 155h280v295h-280z" fill="#243439" stroke="#556260" stroke-width="7"/><path d="M0 310h320v430H0zm320 100h250v340H320zm1010-120h270v450h-270zm-280 155h280v295h-280z" fill="url(#city-windows)" opacity=".65"/><path d="m270 900 470-265m620 265-385-265" stroke="#d2aa83" stroke-opacity=".46" stroke-width="8"/><path d="M300 510v-92m-22 92 22-45 22 45" fill="none" stroke="#7bf1d3" stroke-width="6" filter="url(#cinema-glow)"/></g>
+          <g class="film-set scene-sealink"><path d="M0 660h1600v240H0z" fill="url(#film-road)"/><path d="M0 738q390-132 790-3t810-4" fill="none" stroke="#8cdde0" stroke-opacity=".54" stroke-width="9"/><path d="M100 647 180 318m0 0 164 328m-87-234 138 232m95-202 70 202m-380-275 290 272" fill="none" stroke="#819fa0" stroke-width="11" opacity=".74"/><path d="M0 570q310-282 620 0t620 0 360 0" fill="none" stroke="#8ee4dd" stroke-opacity=".42" stroke-width="8" stroke-dasharray="18 20"/><path class="loop-glitch" d="M0 570q310-282 620 0t620 0 360 0" fill="none" stroke="#c79cff" stroke-opacity=".7" stroke-width="4" stroke-dasharray="4 24"/><g fill="#ffc47c" filter="url(#cinema-glow)"><circle cx="240" cy="630" r="8"/><circle cx="525" cy="635" r="8"/><circle cx="1080" cy="641" r="8"/><circle cx="1370" cy="633" r="8"/></g></g>
+          <g class="film-rain" stroke="#b1e1e0" stroke-width="2" opacity=".43"><path d="m80 60-30 150m180-105-30 150m240-210-30 150m185-20-30 150m220-230-30 155m225-85-30 150m220-205-30 160m225-105-30 150m210-190-30 155m170-100-30 150"/></g>
+          <!-- Cinematic-only Mira design: warm brown skin, cropped curls, rust rain shell, cyan reflective bands and field radio. -->
+          <g class="mira-art" transform="translate(1145 400)"><ellipse cx="0" cy="438" rx="128" ry="22" fill="#02070a" opacity=".65"/><path d="M-66 178q-54 50-51 155l-42 107 43 14 80-118 25-99 31 112-19 105h50l49-142q8-45-15-128l-19-39z" fill="#202a2c" stroke="#101719" stroke-width="8"/><path d="M-86 190q-39 28-49 91l-31 159 48 13 57-118 24-61 32 113 59 12-15-142q-2-40-30-75l-33-23z" fill="url(#mira-jacket)" stroke="#49342e" stroke-width="8"/><path d="m-129 279 56 19m-82 77 52 14" stroke="#83f4d9" stroke-width="13"/><g transform="rotate(18 -159 396)"><rect x="-170" y="378" width="22" height="36" rx="4" fill="#27383a" stroke="#d8c9a8" stroke-width="3"/><circle cx="-159" cy="396" r="7" fill="#c5ddd0" stroke="#6d8580" stroke-width="2"/></g><path d="M-81 198q48 23 92-6l-7 24q-42 35-89 4z" fill="#d69264"/><path d="M-69 213h42v84h-42z" fill="#22353a" stroke="#8eead3" stroke-width="5"/><circle cx="-48" cy="243" r="9" fill="#95ffe4" filter="url(#cinema-glow)"/><path d="M-35 89q-50 13-51 71l17 68q23 37 73 5l25-57q10-53-29-84z" fill="#a76c50" stroke="#382c2a" stroke-width="8"/><path d="M-84 120q-8-62 42-89 51-26 91 8l12 43-28-14-19 21-34-13-32 31-19 5 3 38z" fill="#151c1f"/><path d="M-68 139q10-11 22 0m34-2q13-10 23 1" stroke="#171d1e" stroke-width="6" stroke-linecap="round"/><circle cx="-55" cy="146" r="5" fill="#14191a"/><circle cx="-5" cy="145" r="5" fill="#14191a"/><path d="M-33 171q18 8 31-2" fill="none" stroke="#623a32" stroke-width="5" stroke-linecap="round"/><path d="M-112 419h45l-5 39h-58q-12-8 18-39zm91 34h48l27 22h-75z" fill="#11191b" stroke="#66716d" stroke-width="4"/></g>
+          <!-- Dev is a railway motorman; he enters the frame only in the final Sea Link scenes. -->
+          <g class="dev-art" transform="translate(1390 431)"><ellipse cx="0" cy="410" rx="105" ry="18" fill="#02070a" opacity=".65"/><path d="M-50 180q-41 47-34 142l-40 99 43 16 70-105 16-99 28 100-13 95h47l40-136q8-39-18-117l-17-40z" fill="url(#dev-uniform)" stroke="#111d21" stroke-width="8"/><path d="M-66 216h105v19H-66z" fill="#a5d1c8" opacity=".82"/><path d="M-51 84q-45 17-42 66l15 72q24 32 67 3l25-59q8-49-29-78z" fill="#a47153" stroke="#382d2a" stroke-width="7"/><path d="M-94 111q-4-59 40-84 44-23 80 13l8 36-25-9-21 15-35-11-24 31-20 4z" fill="#737d78"/><path d="M-76 151q15-10 27 1m26-1q13-10 24 1" stroke="#252a28" stroke-width="5" stroke-linecap="round"/><circle cx="-62" cy="154" r="4" fill="#12191a"/><circle cx="-16" cy="154" r="4" fill="#12191a"/><path d="M-48 176q18 15 38-1" fill="none" stroke="#e4d4c2" stroke-width="8" stroke-linecap="round"/><path d="M-32 274h58v42h-58z" fill="#17282c" stroke="#afd4cb" stroke-width="3"/><text x="-26" y="301" fill="#e0f6ed" font-size="14" font-family="monospace">DEV-01</text></g>
+          <path d="M0 0h1600v900H0z" fill="none" stroke="#02070a" stroke-width="150" opacity=".54"/>
+        </svg>
+        <div class="film-grain" aria-hidden="true"></div>
+        <div class="cutscene-topline"><span class="cutscene-signal"><i></i> NULL SIGNAL / CINEMATIC TRANSMISSION</span><span id="cutscene-index">ARCHIVE 01 / 07</span></div>
+        <div class="film-heading"><p id="cutscene-location" class="cutscene-location">DADAR SIGNAL CONTROL</p><h2 id="cutscene-title">The city missed a beat.</h2></div>
+        <div class="cutscene-caption" aria-live="polite"><span id="cutscene-speaker" class="cutscene-speaker">ARCHIVE</span><p id="cutscene-copy" class="cutscene-copy"></p></div>
+        <div class="cutscene-controls">
+          <div class="cutscene-timeline"><i id="cutscene-clock-fill"></i></div>
+          <div class="cutscene-action-row"><span id="cutscene-beat" class="cutscene-beat">01 / 04</span><div class="cutscene-progress" id="cutscene-progress" aria-hidden="true"></div><div class="cutscene-actions">
+            <button id="cutscene-play-button" class="cutscene-control" aria-label="Pause captions" title="Pause captions">Ⅱ</button>
+            <button id="cutscene-voice-button" class="cutscene-control voice-enabled" aria-label="Turn narration off" aria-pressed="true" title="Narration: on">♫</button>
+            <button id="cutscene-next-button" class="button button-primary"><span id="cutscene-next-label">Continue</span><span class="arrow">↗</span></button>
+            <button id="cutscene-skip-button" class="cutscene-skip">SKIP VIDEO</button>
+          </div></div>
+          <p class="cutscene-key-hint"><kbd>ENTER</kbd> / <kbd>SPACE</kbd> NEXT <span>ESC · SKIP</span></p>
+        </div>
+      </section>
+      <section id="briefing-screen" class="screen screen-card" aria-live="polite">
+        <div class="briefing-card">
+          <p id="briefing-kicker" class="eyebrow">CHAPTER 01</p>
+          <h2 id="briefing-title">The city is listening.</h2>
+          <p id="briefing-copy"></p>
+          <div class="briefing-mechanic"><span class="mechanic-glyph">◌</span><div><small>ANOMALY</small><strong id="briefing-mechanic-name"></strong></div><kbd id="briefing-key"></kbd></div>
+          <button id="enter-level-button" class="button button-primary"><span>Enter the city</span><span class="arrow">↗</span></button>
+        </div>
+      </section>
+
+      <section id="hud" class="hidden" aria-live="polite">
+        <header class="hud-top">
+          <div class="chapter-mark"><span id="hud-chapter">01</span><div><strong id="hud-location">DADAR STATION</strong><small id="hud-subtitle">THE STOPPED MINUTE</small></div></div>
+          <div class="hud-objective"><small>OBJECTIVE</small><strong id="objective-text">Find the signal fragments</strong></div>
+          <div class="hud-status"><div class="shard-count"><span class="shard-icon">◇</span><strong id="shard-value">00 / 03</strong><small id="shard-label">SIGNAL FRAGMENTS</small></div><div class="health-wrap"><small>SYNC</small><div id="health-pips" class="health-pips"></div></div></div>
+        </header>
+        <div id="crosshair" class="crosshair"><span></span><span></span></div>
+        <div id="interaction-prompt" class="interaction-prompt hidden"><kbd>E</kbd><span>INTERACT</span></div>
+        <div id="toast" class="toast" aria-live="assertive"></div>
+        <div id="hint-panel" class="hint-panel"><span class="hint-glyph">✦</span><span id="hint-text">Look for a way through.</span><button id="dismiss-hint" aria-label="Dismiss hint">×</button></div>
+        <footer class="hud-bottom">
+          <div class="mechanic-readout"><span id="mechanic-state" class="mechanic-state">ANOMALY INACTIVE</span><strong id="mechanic-help">F · FREEZE TIME</strong></div>
+          <div class="bottom-center"><span class="control-chip"><kbd>W A S D</kbd> MOVE</span><span class="control-chip"><kbd>SPACE</kbd> JUMP</span><span class="control-chip"><kbd>E</kbd> INTERACT</span></div>
+          <div class="hud-tools"><button id="audio-button" class="icon-button" aria-label="Toggle audio">♫ <span>ON</span></button><button id="pause-button" class="icon-button" aria-label="Pause game">Ⅱ</button></div>
+        </footer>
+      </section>
+
+      <section id="pause-screen" class="screen screen-card hidden" aria-label="Paused">
+        <div class="briefing-card compact-card">
+          <p class="eyebrow">SIGNAL PAUSED</p><h2>Catch your breath.</h2>
+          <p>Your fragments are safe. The city will wait.</p>
+          <button id="resume-button" class="button button-primary"><span>Return to the city</span><span class="arrow">↗</span></button>
+          <button id="restart-level-button" class="button button-quiet">Restart this chapter</button>
+        </div>
+      </section>
+
+      <section id="chapter-clear-screen" class="screen screen-card hidden" aria-live="polite">
+        <div class="briefing-card clear-card">
+          <p class="eyebrow"><span class="signal-dot"></span> A HANDWRITTEN NOTE · RECOVERED</p>
+          <h2 id="clear-title">The minute starts again.</h2>
+          <p id="clear-copy"></p>
+          <article class="field-note" aria-label="Handwritten note from Dev">
+            <div class="note-heading"><span id="note-location">DADAR STATION</span><span id="note-date">17 AUG 2037</span></div>
+            <p id="note-greeting" class="note-handwriting">Mira,</p>
+            <p id="note-message" class="note-handwriting note-message"></p>
+            <div class="note-clue"><small>NEXT SIGNAL · CLUE</small><p id="note-clue" class="note-handwriting"></p></div>
+            <p id="note-signature" class="note-handwriting note-signature">Baba</p>
+            <span class="note-stamp" aria-hidden="true">DEV<br>01</span>
+          </article>
+          <div class="clear-stats"><div><strong id="clear-fragments">03 / 03</strong><small id="clear-collectible-label">FRAGMENTS</small></div><div><strong id="clear-time">00:00</strong><small>TIME IN THE GLITCH</small></div></div>
+          <button id="next-level-button" class="button button-primary"><span>Follow the clue</span><span class="arrow">↗</span></button>
+          <button id="finish-button" class="button button-primary hidden"><span>Watch the ending</span><span class="arrow">↗</span></button>
+        </div>
+      </section>
+
+      <section id="win-screen" class="screen screen-card hidden" aria-label="You won">
+        <div class="briefing-card win-card">
+          <p class="eyebrow"><span class="signal-dot"></span> MUMBAI REMEMBERS · 05:42 AM</p>
+          <h2>Congratulations,<br><em>you won.</em></h2>
+          <p>Mira and Dev make it home on the first local. Four signal relays are restored, the rain moves forward, and the city wakes up with them.</p>
+          <div class="clear-stats"><div><strong>04 / 04</strong><small>CHAPTERS CLEARED</small></div><div><strong>12 / 12</strong><small>SIGNAL FRAGMENTS</small></div></div>
+          <button id="win-replay-button" class="button button-primary"><span>Play the escape again</span><span class="arrow">↗</span></button>
+          <button id="win-title-button" class="button button-quiet">Return to the title</button>
+        </div>
+      </section>
+
+      <div id="mobile-controls" class="mobile-controls hidden" aria-label="Touch controls">
+        <div class="touch-cluster movement-cluster"><button data-move="forward" class="touch-button touch-up" aria-label="Move forward">▲</button><button data-move="left" class="touch-button touch-left" aria-label="Move left">◀</button><button data-move="back" class="touch-button touch-down" aria-label="Move back">▼</button><button data-move="right" class="touch-button touch-right" aria-label="Move right">▶</button></div>
+        <div class="touch-cluster action-cluster"><button data-action="interact" class="touch-button touch-action">USE</button><button data-action="jump" class="touch-button touch-action">JUMP</button><button data-action="mechanic" class="touch-button touch-mechanic">SHIFT</button></div>
+        <div class="look-label">DRAG TO LOOK</div>
+      </div>
+      <div id="load-error" class="load-error hidden"><strong>Couldn’t load the city.</strong><span>Check your connection and reload. The game streams its 3D engine from jsDelivr.</span></div>
+    </main>
+    <script>
+      (function () {
+        var errorBox = document.getElementById("load-error");
+        function showLoadError() {
+          if (location.protocol === "file:") {
+            errorBox.querySelector("strong").textContent = "Start the game with Start Game.cmd.";
+            errorBox.querySelector("span").textContent = "Edge blocks 3D modules when index.html is opened directly. Run Start Game.cmd in this folder, or host the project on GitHub Pages.";
+          }
+          errorBox.classList.remove("hidden");
+        }
+        window.addEventListener("error", showLoadError, true);
+        window.addEventListener("unhandledrejection", showLoadError);
+      }());
+    </script>
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
+
+
+
